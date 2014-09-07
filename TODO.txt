@@ -1,4 +1,3 @@
-- get the issues in from tmp/
 - add a version, real option handling and main
 - add test suite
 - handle html snippet by wrapping in <body> if not there already, to allow:

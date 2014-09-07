@@ -2,7 +2,7 @@
 
 # 1.1.0 (not yet released)
 
-(nothing yet)
+- Add CLI options: -h/--help, -v/--verbose, --version, etc.
 
 
 # 1.0.0

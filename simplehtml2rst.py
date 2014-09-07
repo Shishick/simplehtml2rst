@@ -5,14 +5,36 @@ simplehtml2rst -- Convert simple xhtml to reStructuredText.
 
 from __future__ import print_function
 
-import xml.dom.minidom
+__version_info__ = (1, 1, 0)
+__version__ = '.'.join(map(str, __version_info__))
+
+import codecs
+import logging
+import math
+import optparse
 import re
 import sys
 import textwrap
-import math
 import UserList
 import warnings
-import codecs
+import xml.dom.minidom
+
+
+
+#---- Python version compat
+
+# Use `bytes` for byte strings and `unicode` for unicode strings (str in Py3).
+if sys.version_info[0] <= 2:
+    py3 = False
+    try:
+        bytes
+    except NameError:
+        bytes = str
+    base_string_type = basestring
+elif sys.version_info[0] >= 3:
+    py3 = True
+    unicode = str
+    base_string_type = str
 
 
 
@@ -24,6 +46,8 @@ p = print
 def e(*args, **kwargs):
     kwargs['file'] = sys.stderr
     print(*args, **kwargs)
+
+log = logging.getLogger('simplehtml2rst')
 
 ###############################################################################
 # Global variables. I know. I'm terribly sorry. Please get rid of them.
@@ -485,11 +509,63 @@ def handleTr(node):
 def handlePre(node):
     return PreDitem(mergeChildren(node).text)
 
-dom1 = xml.dom.minidom.parse(sys.argv[1])
-ditem = handleNode(dom1.getElementsByTagName("body")[0])
-ditem.propagate_indents()
-(utf8_encode, utf8_decode, utf8_reader, utf8_writer) = codecs.lookup('utf-8')
-outf = utf8_writer(sys.stdout)
-outf.write(ditem.format(79) + '\n')
-for h in hyperlinks.keys():
-    outf.write('\n.. _`' + h + '`:\n    ' + hyperlinks[h] + '\n')
+
+
+#---- public API
+
+def simplehtml2rst(html):
+    doc = xml.dom.minidom.parseString(html)
+    ditem = handleNode(doc.getElementsByTagName("body")[0])
+    ditem.propagate_indents()
+
+    #(utf8_encode, utf8_decode, utf8_reader, utf8_writer) = codecs.lookup('utf-8')
+    #outf = utf8_writer(sys.stdout)
+    #outf.write(ditem.format(79) + '\n')
+    #for h in hyperlinks.keys():
+    #    outf.write('\n.. _`' + h + '`:\n    ' + hyperlinks[h] + '\n')
+
+    parts = [ditem.format(79), '\n']
+    for h in hyperlinks.keys():
+        parts.append('\n.. _`' + h + '`:\n    ' + hyperlinks[h] + '\n')
+    return ''.join(parts)
+
+
+
+#---- mainline
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+    if not logging.root.handlers:
+        logging.basicConfig()
+
+    usage = "usage: %prog [PATHS...]"
+    version = "%prog "+__version__
+    desc = "Convert simple HTML to reStructuredText."
+    parser = optparse.OptionParser(prog="simplehtml2rst", usage=usage,
+        version=version, description=desc)
+    parser.add_option("-v", "--verbose", dest="log_level",
+                      action="store_const", const=logging.DEBUG,
+                      help="more verbose output")
+    parser.add_option("--encoding", help="specify encoding of HTML content")
+    parser.set_defaults(log_level=logging.INFO, encoding="utf-8")
+    opts, paths = parser.parse_args()
+    log.setLevel(opts.log_level)
+
+    if not paths:
+        paths = ['-']
+    for path in paths:
+        if path == '-':
+            html = sys.stdin.read()
+        else:
+            fp = codecs.open(path, 'r', opts.encoding)
+            html = fp.read()
+            fp.close()
+        rst = simplehtml2rstmarkdown(html)
+        if py3:
+            sys.stdout.write(rst)
+        else:
+            sys.stdout.write(rst.encode(sys.stdout.encoding or "utf-8"))
+
+if __name__ == "__main__":
+    sys.exit( main(sys.argv) )
