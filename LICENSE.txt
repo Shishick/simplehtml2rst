@@ -28,5 +28,5 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
 This module started with revision 3753 of [the "xhtml2rest.py" script in the
 docutils svn
 repository](http://sourceforge.net/p/docutils/code/HEAD/tree/trunk/sandbox/xhtml2rest/).
-The original author is Antonios Christofides.  A header comment in the module
-placed it in the public domain.
+The original author is Antonios Christofides (anthony@itia.ntua.gr), May-June
+2005. A header comment in the module placed it in the public domain.

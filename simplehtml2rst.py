@@ -1,80 +1,9 @@
 #!/usr/bin/python
 """
-NAME
-====
-
-xhtml2rest - Convert xhtml to reStructuredText
-
-SYNOPSIS
-========
-
-xhtml2rest *xhtmlfile* > *restfile*
-
-DESCRIPTION
-===========
-
-``xhtml2rest``, which, far from being a decent and complete program, is
-only something to begin with, hopefully processes the given UTF-8
-xhtml file and produces reStructuredText "source code" in the standard
-output.  If your input is html and/or not in UTF-8, you can convert it
-to UTF-8 xhtml using ``iconv`` and ``tidy``:
-
-    iconv -f *source_encoding* -t utf-8 *source_html* > *html_utf8*
-
-    tidy -utf8 -asxml -o *xhtmlfile* *html_utf8*
-
-    xhtml2rest *xhtmlfile* > *restfile*
-
-Interestingly, since reStructuredText is not simple markup, but has
-very strict rules with the intention that the source is perfectly
-readable, it turns out that converting html to reStructuredText is
-actually *rendering*. ``xhtml2rest`` is a small rendering engine. Since
-I had no time to study how existing rendering engines work, I had to
-reinvent the wheel. So although the code is clean (I actually wrote it
-twice), I doubt that the core logic is adequate for future extensions.
-But it's better than nothing. There is some documentation in the code,
-but feel free to email me if you need more explanations.
-
-LIMITATIONS
-===========
-
-I created ``xhtml2rest`` for a very specific job. It does that job
-correctly, but for your web page it might not work. It should not be
-very hard, however, either to improve the code, or to determine what
-it is in your web page that confuses ``xhtml2rest`` and remove it.
-
-Other than that, there are the following limitations:
-
-* No indented tables
-
-* No multi-col or -row spans in tables
-
-* No support for \<br>
-
-* Not tested in nested tables (check http://www.w3m.org/story.html)
-
-* \<th> support is quick and dirty
-
-* If the same anchor text is met twice, the anchor is ignored
-
-* No indented \<pre> elements (but I'm not sure the HTML standard
-  allows them)
-
-* Images are ignored
-
-* The word HARDWIRED in the code indicates a hardwired hack which is
-  specific to the job I wanted ``xhtml2rest`` to do.
-
-META
-====
-
-``xhtml2rest`` was created by Antonios Christofides,
-anthony@itia.ntua.gr, May-June 2005.
-
-Revision: $Revision: 3753 $
-
-The code and this text is hereby placed in the public domain.
+simplehtml2rst -- Convert simple xhtml to reStructuredText.
 """
+
+from __future__ import print_function
 
 import xml.dom.minidom
 import re
@@ -84,6 +13,17 @@ import math
 import UserList
 import warnings
 import codecs
+
+
+
+#---- globals
+
+# A crutch: short to type print funcs for debugging. This script shouldn't
+# ever ship with these being used.
+p = print
+def e(*args, **kwargs):
+    kwargs['file'] = sys.stderr
+    print(*args, **kwargs)
 
 ###############################################################################
 # Global variables. I know. I'm terribly sorry. Please get rid of them.
@@ -98,6 +38,10 @@ import codecs
 unindent = ''
 hyperlinks = {} # text-target pairs found in "a href" elements
 ###############################################################################
+
+
+
+#---- Document class hierarchy
 
 class Ditem:
     """A document item; usually a node, but can be a block of text
@@ -413,7 +357,7 @@ def handleNodeList(nodelist):
 def handleNode(node):
     if node.nodeType == node.TEXT_NODE:
         return handleText(node)
-    elif node.nodeName=='a':
+    elif node.nodeName == 'a':
         return handleAnchor(node)
     elif re.match('h\d', node.nodeName):
         return handleHeading(node)
@@ -429,11 +373,11 @@ def handleNode(node):
         return handleList(node)
     elif node.nodeName in ('li', 'dd', 'dt'):
         return handleListItem(node)
-    elif node.nodeName in ('table'):
+    elif node.nodeName in ('table',):
         return handleTable(node)
-    elif node.nodeName in ('tr'):
+    elif node.nodeName in ('tr',):
         return handleTr(node)
-    elif node.nodeName in ('pre'):
+    elif node.nodeName in ('pre',):
         return handlePre(node)
     elif node.hasChildNodes():
         contents = handleNodeList(node.childNodes)

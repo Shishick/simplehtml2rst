@@ -25,6 +25,28 @@ License section below for a link.
 - I'm currently using Python 2. However I'd be happy to support Python 3.
   Patches very welcome.
 
+And a number of limitations from the original author (edited by me):
+
+- No indented tables
+
+- No multi-col or -row spans in tables
+
+- No support for `<br>`
+
+- Not tested in nested tables
+
+- `<th>` support is quick and dirty
+
+- If the same anchor text is met twice, the anchor is ignored
+
+- No indented `<pre>` elements
+
+- Images are ignored
+
+- The word HARDWIRED in the code indicates a hardwired hack which is
+  specific to the job I wanted ``xhtml2rest`` to do.
+
+
 
 # License
 
