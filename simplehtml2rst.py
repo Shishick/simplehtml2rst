@@ -252,7 +252,7 @@ class ListDitem(BlockDitem):
                 order = order+1
         # And then process normally
         return BlockDitem.format(self, width)
-        
+
 class ListItemDitem(BlockDitem):
     "A Ditem representing a li, dt, or dd"
     def __init__(self, type):
@@ -327,7 +327,7 @@ class RenderedColumns(UserList.UserList):
         for x in self.data:
             if x.fixedwidth: continue
             x.curwidth = x.curwidth - math.ceil(w*x.logwidth()/self.sumLogWidth())
-    
+
 def tablehrule(colwidths, rule='-'):
     "Returns a horizontal table separator for given column widths"
     result = '+'
@@ -341,7 +341,7 @@ class TableDitem(BlockDitem):
     def format(self, width):
         # Uses table rendering algorithm of w3m
         # (http://www.w3m.org/story.html), but ignoring width attribute
-        # Step 1 
+        # Step 1
         columns = RenderedColumns([RenderedColumn(x.minwidth(),
             max(x.maxwidth(), 1)    # A column can't be smaller than 1 character
             ) for x in self.children[0].children])
@@ -389,7 +389,7 @@ class TrDitem(BlockDitem):
         for i in range(len(columns)):
             for j in range(maxlinecount-len(columns[i])):
                 columns[i].append(' ' * colwidths[i])
-        result = '' 
+        result = ''
         # Add vertical separators
         for i in range(maxlinecount):
             result = result + '|'
@@ -471,7 +471,7 @@ def handleAnchor(node):
     if hyperlinks.has_key(key) and hyperlinks[key]!=target:
         # The following try-except is a quick hack to ensure that the
         # program will not stop because of problems in the warning
-        # mechanism. One such specific problem is a UnicodeEncodeError 
+        # mechanism. One such specific problem is a UnicodeEncodeError
         # when result.text contains difficult characters.
         try:
             warnings.warn("Ignoring second appearance of anchor '" + result.text +
