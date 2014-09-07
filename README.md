@@ -1,5 +1,8 @@
 A pure Python module/script to convert simple HTML to reStructuredText.
 
+**WARNING: This isn't ready for anyone to use yet. These aren't the droids
+your are looking for.**
+
 "Simple" because this tool currently (and probably only ever) will support
 dealing with fairly simple HTML. See my [ulterior motive](#ulterior-motive)
 for why this is sufficient for my needs: Markdown conversion (modulo
