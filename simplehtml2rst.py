@@ -180,7 +180,6 @@ class PreDitem(Ditem):
         result = '::\n\n'
         for x in self.text.split('\n'):
             result = result + '    ' + x + '\n'
-        result = result + '..\n\n'
         return result
     def canmerge(self):
         return False
@@ -403,6 +402,8 @@ def handleNode(node):
         return handleTr(node)
     elif node.nodeName in ('pre',):
         return handlePre(node)
+    elif node.nodeName == 'code' and node.parentNode.nodeName != 'pre':
+        return handleCode(node)
     elif node.hasChildNodes():
         contents = handleNodeList(node.childNodes)
         if len(contents) == 1: return contents[0]
@@ -509,6 +510,15 @@ def handleTr(node):
 def handlePre(node):
     return PreDitem(mergeChildren(node).text)
 
+def handleCode(node):
+    # Note that we've already ensured that we don't call here for a <code>
+    # inside a <pre> (as is common in Markdown processors).
+    result = mergeChildren(node)
+    result.type = node.nodeName
+    if result.text:
+        result.text = '``' + result.text + '``'
+    return result
+
 
 
 #---- public API
@@ -517,12 +527,6 @@ def simplehtml2rst(html):
     doc = xml.dom.minidom.parseString(html)
     ditem = handleNode(doc.getElementsByTagName("body")[0])
     ditem.propagate_indents()
-
-    #(utf8_encode, utf8_decode, utf8_reader, utf8_writer) = codecs.lookup('utf-8')
-    #outf = utf8_writer(sys.stdout)
-    #outf.write(ditem.format(79) + '\n')
-    #for h in hyperlinks.keys():
-    #    outf.write('\n.. _`' + h + '`:\n    ' + hyperlinks[h] + '\n')
 
     parts = [ditem.format(79), '\n']
     for h in hyperlinks.keys():
@@ -561,7 +565,7 @@ def main(argv=None):
             fp = codecs.open(path, 'r', opts.encoding)
             html = fp.read()
             fp.close()
-        rst = simplehtml2rstmarkdown(html)
+        rst = simplehtml2rst(html)
         if py3:
             sys.stdout.write(rst)
         else:

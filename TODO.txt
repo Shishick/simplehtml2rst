@@ -1,6 +1,6 @@
+- fix curr issues
 - handle html snippet by wrapping in <body> if not there already, to allow:
     markdown2 foo.md | simplehtml2rst > foo.rst
-- fix those issues
 - add real blockquote (drop the HARDWIRED from module and README.md)
 - some solution for directives (I hope minidom exposes HTML comments)
 - test against my corpus
