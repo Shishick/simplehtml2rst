@@ -2,6 +2,7 @@
 
 # 1.1.0 (not yet released)
 
+- [issue #3] fix `<code>` handling 
 - Add CLI options: -h/--help, -v/--verbose, --version, etc.
 
 
