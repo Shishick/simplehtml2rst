@@ -382,13 +382,16 @@ def handleNodeList(nodelist):
     curditem = Ditem('')
     for node in nodelist:
         aditem = handleNode(node)
-        if curditem.merge(aditem): continue
+        if curditem.merge(aditem):
+            continue
         ditems.append(curditem)
         curditem = aditem
     if not curditem.empty(): ditems.append(curditem)
     return ditems
 
 def handleNode(node):
+    parent = node.parentNode
+
     if node.nodeType == node.TEXT_NODE:
         return handleText(node)
     elif node.nodeName == 'a':
@@ -413,15 +416,18 @@ def handleNode(node):
         return handleTr(node)
     elif node.nodeName in ('pre',):
         return handlePre(node)
-    elif node.nodeName == 'code' and node.parentNode.nodeName != 'pre':
+    elif node.nodeName == 'code' and parent.nodeName != 'pre':
         return handleCode(node)
     elif node.hasChildNodes():
         contents = handleNodeList(node.childNodes)
-        if len(contents) == 1: return contents[0]
-        if len(contents) == 0: return Ditem('')
-        result = BlockDitem(node.nodeName)
-        result.children = contents
-        return result
+        if len(contents) == 1:
+            return contents[0]
+        elif len(contents) == 0:
+            return Ditem('')
+        else:
+            result = BlockDitem(node.nodeName)
+            result.children = contents
+            return result
     return Ditem('')
 
 def processChildren(node):
@@ -432,9 +438,12 @@ def processChildren(node):
 
 def mergeChildren(node):
     contents = processChildren(node)
-    if len(contents)>1: raise Exception('Unexpected block elements')
-    if contents: return contents[0]
-    else: return Ditem('')
+    if len(contents) > 1:
+        raise Exception('Unexpected block elements')
+    elif contents:
+        return contents[0]
+    else:
+        return Ditem('')
 
 def handleText(node):
     return Ditem(node.data)
@@ -501,6 +510,16 @@ def handleList(node):
 def handleListItem(node):
     result = ListItemDitem(node.nodeName)
     result.children = processChildren(node)
+
+    # Handle the case of a `<li>` followed immediately by a block node. E.g.:
+    #       <li><p>blah blah...
+    # If we don't do this then we hit
+    # <https://github.com/trentm/simplehtml2rst/issues/2> because the bullet
+    # (`unindent`) is applied to a `Ditem('')` and effectively gets lost. That
+    # empty `Ditem('')` is pointless, do skip it.
+    if len(result.children) > 1 and result.children[0].text == '':
+        result.children = result.children[1:]
+
     return result
 
 def handleTable(node):
