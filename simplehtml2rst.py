@@ -12,6 +12,7 @@ import codecs
 import logging
 import math
 import optparse
+from pprint import pprint
 import re
 import sys
 import textwrap
@@ -152,7 +153,8 @@ class BlockDitem(Ditem):
         self.type = type
         self.children = []  # Contained Ditems
     def __repr__(self):
-        return self.__class__.__name__+'("'+self.type+'"); children = '+repr(self.children)
+        return '<%s("%s") children=%r>' % (
+            self.__class__.__name__, self.type, self.children)
     def maxwidth(self):
         childmaxwidths = [x.maxwidth() for x in self.children]
         return childmaxwidths and max(childmaxwidths) or 0
@@ -524,9 +526,16 @@ def handleListItem(node):
 
 def handleTable(node):
     result = TableDitem(node.nodeName)
-    # Ignore table contents that are not tr
-    result.children = [x
-        for x in processChildren(node) if x.type=='tr']
+    # Ignore table contents that are not tr. Descend into tbody/thead.
+    children = []
+    for childNode in node.childNodes:
+        if childNode.nodeName in ('thead', 'tbody'):
+            for subChildNode in childNode.childNodes:
+                if subChildNode.nodeName == 'tr':
+                    children.append(handleNode(subChildNode))
+        elif childNode.nodeName == 'tr':
+            children.append(handleNode(childNode))
+    result.children = children
     return result
 
 def handleTr(node):
