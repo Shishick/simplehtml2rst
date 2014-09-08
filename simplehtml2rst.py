@@ -61,12 +61,10 @@ log = logging.getLogger('simplehtml2rst')
 # the unindent and then sets it to empty again.
 
 unindent = ''
-hyperlinks = {} # text-target pairs found in "a href" elements
 
 def _reset_globals():
-    global unindent, hyperlinks
+    global unindent
     unindent = ''
-    hyperlinks = {}
 ###############################################################################
 
 
@@ -453,24 +451,9 @@ def handleText(node):
 def handleAnchor(node):
     result = mergeChildren(node)
     result.type = node.nodeName
-    result.text = result.text.strip()
-    if result.text == '': return result
-    target = node.getAttribute('href').strip()
-    result.text = re.sub('\s+', ' ', result.text)
-    key = result.text.lower()
-    if hyperlinks.has_key(key) and hyperlinks[key]!=target:
-        # The following try-except is a quick hack to ensure that the
-        # program will not stop because of problems in the warning
-        # mechanism. One such specific problem is a UnicodeEncodeError
-        # when result.text contains difficult characters.
-        try:
-            warnings.warn("Ignoring second appearance of anchor '" + result.text +
-                                                    "' with different target")
-        except:
-            pass
-        return result
-    hyperlinks[key] = target
-    result.text = '`'+result.text+'`_'
+    linktext = result.text
+    href = node.getAttribute('href')
+    result.text = '`%s <%s>`_' % (linktext, href)
     return result
 
 def handleHeading(node):
@@ -567,11 +550,10 @@ def simplehtml2rst(html):
     doc = xml.dom.minidom.parseString(html)
     ditem = handleNode(doc.getElementsByTagName("body")[0])
     ditem.propagate_indents()
-
-    parts = [ditem.format(79), '\n']
-    for h in hyperlinks.keys():
-        parts.append('\n.. _`' + h + '`:\n    ' + hyperlinks[h] + '\n')
-    return ''.join(parts)
+    rst = ditem.format(79)
+    if not rst.endswith('\n'):
+        rst += '\n'
+    return rst
 
 
 
