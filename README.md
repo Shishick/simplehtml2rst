@@ -50,6 +50,16 @@ And a number of limitations from the original author (edited by me):
   specific to the job I wanted ``xhtml2rest`` to do.
 
 
+# Testing
+
+Test with the current first Python on the PATH:
+
+    make test
+
+Test with all Python versions we can find:
+
+    make testall
+
 
 # License
 
