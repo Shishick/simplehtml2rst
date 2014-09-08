@@ -40,14 +40,9 @@ And a number of limitations from the original author (edited by me):
 
 - `<th>` support is quick and dirty
 
-- If the same anchor text is met twice, the anchor is ignored
-
 - No indented `<pre>` elements
 
 - Images are ignored
-
-- The word HARDWIRED in the code indicates a hardwired hack which is
-  specific to the job I wanted ``xhtml2rest`` to do.
 
 
 # Testing

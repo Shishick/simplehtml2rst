@@ -398,7 +398,7 @@ def handleNode(node):
         return handleAnchor(node)
     elif re.search('^h\d$', node.nodeName):
         return handleHeading(node)
-    elif node.nodeName=='div' and node.getAttribute('class')=='cit':  # HARDWIRED
+    elif node.nodeName == 'blockquote':
         return handleBlockQuote(node)
     elif node.nodeName in ('body', 'div', 'p', 'td', 'th'):
         return handleGenericBlock(node)

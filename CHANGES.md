@@ -2,6 +2,7 @@
 
 # 1.1.0 (not yet released)
 
+- Real `<blockquote>` handling.
 - Handle html snippet by wrapping in `<body>` if not there already, to allow,
   e.g.:
 
