@@ -1,0 +1,9 @@
+
+>>> import simplehtml2rst
+>>> hasattr(simplehtml2rst, "__version__")
+True
+>>> hasattr(simplehtml2rst, "__version_info__")
+True
+
+>>> str( simplehtml2rst.simplehtml2rst('<body><em>boo</em></body>') )
+'*boo*\n'

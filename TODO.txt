@@ -1,5 +1,3 @@
-- add a version, real option handling and main
-- add test suite
 - handle html snippet by wrapping in <body> if not there already, to allow:
     markdown2 foo.md | simplehtml2rst > foo.rst
 - fix those issues
