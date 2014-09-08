@@ -162,6 +162,9 @@ class BlockDitem(Ditem):
         if width < self.minwidth(): width = self.minwidth()
         results = [x.format(width) for x in self.children]
         results = [x for x in results if x]
+        # TODO: can this be reduced to one or *no* \n's? `pre`, at least,
+        # handles trailing `\n`s.
+        #    return "".join(results)
         return "\n\n".join(results)
     def empty(self):
         return not (self.children)
@@ -178,8 +181,9 @@ class PreDitem(Ditem):
         pass
     def format(self, width):
         result = '::\n\n'
-        for x in self.text.split('\n'):
-            result = result + '    ' + x + '\n'
+        for x in self.text.split('\n')[:-1]:
+            result += '    ' + x + '\n'
+        result += '\n'
         return result
     def canmerge(self):
         return False
