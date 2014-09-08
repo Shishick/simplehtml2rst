@@ -61,6 +61,11 @@ log = logging.getLogger('simplehtml2rst')
 
 unindent = ''
 hyperlinks = {} # text-target pairs found in "a href" elements
+
+def _reset_globals():
+    global unindent, hyperlinks
+    unindent = ''
+    hyperlinks = {}
 ###############################################################################
 
 
@@ -527,6 +532,8 @@ def handleCode(node):
 #---- public API
 
 def simplehtml2rst(html):
+    _reset_globals()
+
     doc = xml.dom.minidom.parseString(html)
     ditem = handleNode(doc.getElementsByTagName("body")[0])
     ditem.propagate_indents()
