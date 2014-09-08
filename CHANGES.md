@@ -2,6 +2,7 @@
 
 # 1.1.0 (not yet released)
 
+- [issue #4] Don't drop internal links (i.e. to `#my-anchor` in the same doc).
 - [issue #3] fix `<code>` handling 
 - Add CLI options: -h/--help, -v/--verbose, --version, etc.
 

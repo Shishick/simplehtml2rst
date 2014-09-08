@@ -438,7 +438,6 @@ def handleAnchor(node):
     result.text = result.text.strip()
     if result.text == '': return result
     target = node.getAttribute('href').strip()
-    if target=="" or target[0]=='#': return result  # Ignore intrnl links
     result.text = re.sub('\s+', ' ', result.text)
     key = result.text.lower()
     if hyperlinks.has_key(key) and hyperlinks[key]!=target:
