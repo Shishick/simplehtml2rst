@@ -1,6 +1,3 @@
-- fix curr issues
-- to test:
-    ul in an ol, vice versa
 - handle html snippet by wrapping in <body> if not there already, to allow:
     markdown2 foo.md | simplehtml2rst > foo.rst
 - add real blockquote (drop the HARDWIRED from module and README.md)
