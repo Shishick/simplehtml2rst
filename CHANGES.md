@@ -2,6 +2,11 @@
 
 # 1.1.0 (not yet released)
 
+- Handle html snippet by wrapping in `<body>` if not there already, to allow,
+  e.g.:
+
+        markdown2 foo.md | simplehtml2rst > foo.rst
+
 - [issue #6] Just use inline link hrefs instead of pulling out to
   link refs at the bottom. The block of link refs at the bottom was
   predicated on "same link text" == "same href", which is wrong.
@@ -10,7 +15,7 @@
 - [issue #1] Don't blow up on `<tbody>` or `<thead>`.
 - [issue #2] Fix `<li><p>...` case where the bullet would get dropped.
 - [issue #4] Don't drop internal links (i.e. to `#my-anchor` in the same doc).
-- [issue #3] fix `<code>` handling 
+- [issue #3] fix `<code>` handling
 - Add CLI options: -h/--help, -v/--verbose, --version, etc.
 
 

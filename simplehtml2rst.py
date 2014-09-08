@@ -547,8 +547,24 @@ def handleCode(node):
 def simplehtml2rst(html):
     _reset_globals()
 
-    doc = xml.dom.minidom.parseString(html)
-    ditem = handleNode(doc.getElementsByTagName("body")[0])
+    # Parse the given HTML and find the <body> node, adding the "<body>"
+    # tag if necessary. The latter is to allow HTML snippet input.
+    try:
+        doc = xml.dom.minidom.parseString(html)
+    except xml.parsers.expat.ExpatError, ex:
+        if '<body>' not in html.lower():
+            html = '<body>' + html + '\n</body>'
+            doc = xml.dom.minidom.parseString(html)
+        else:
+            raise
+    hits = doc.getElementsByTagName("body")
+    if not hits:
+        html = '<body>' + html + '\n</body>'
+        doc = xml.dom.minidom.parseString(html)
+        hits = doc.getElementsByTagName("body")
+    body = hits[0]
+
+    ditem = handleNode(body)
     ditem.propagate_indents()
     rst = ditem.format(79)
     if not rst.endswith('\n'):
