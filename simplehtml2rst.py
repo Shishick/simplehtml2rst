@@ -236,8 +236,10 @@ class ListItemDitem(BlockDitem):
         self.listtype = None
         self.order = 0
     def minwidth(self):
-        if self.type == 'dt': return self.maxwidth()  # Don't wrap dt
-        else: return BlockDitem.minwidth(self)
+        if self.type == 'dt':
+            return self.maxwidth()  # Don't wrap dt
+        else:
+            return BlockDitem.minwidth(self)
     def propagate_indents(self):
         if self.type in ('li', 'ol', 'dd'):
             self.indentlevel = self.indentlevel + 1
@@ -391,7 +393,7 @@ def handleNode(node):
         return handleText(node)
     elif node.nodeName == 'a':
         return handleAnchor(node)
-    elif re.match('h\d', node.nodeName):
+    elif re.search('^h\d$', node.nodeName):
         return handleHeading(node)
     elif node.nodeName=='div' and node.getAttribute('class')=='cit':  # HARDWIRED
         return handleBlockQuote(node)
